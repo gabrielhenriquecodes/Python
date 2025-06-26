@@ -1,4 +1,4 @@
-#Verificador de cpf simples
+#Validador de CPF em Python com Verificação dos Dígitos Finais
 
 cpf = input("Qual seu CPF?: ")
 if cpf.isnumeric() == False:
