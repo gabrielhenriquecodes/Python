@@ -1,2 +1,40 @@
-# Python
-Codigos basicos em Python
+#Verificador de cpf simples
+
+cpf = input("Qual seu CPF?: ")
+if cpf.isnumeric() == False:
+    print("Caracteris invalidas tente novamente!")
+    exit()
+lista = list(cpf)
+if len(lista) != 11:
+    print("esta faltaqndo digitos ou esta sobrando")
+    exit()
+x = 10
+lista2 = []
+for i in lista[:-2]:
+    mult = int(i) * x
+    x = x - 1
+    lista2.append(mult)
+soma = sum(lista2)
+div = soma % 11
+if div <= 2:
+    digito = 0
+else:
+   digito = 11 - div
+if int(lista[9]) != digito:
+    print("Ta errado fdp")
+    exit()
+x = 11
+lista2 = []
+for i in lista[:-1]:
+    mult = int(i) * x
+    x = x - 1
+    lista2.append(mult)
+soma = sum(lista2)
+div = soma % 11
+if div <= 2:
+    digito = 0
+else:
+   digito = 11 - div
+if int(lista[10]) !=digito:
+    print("errou")
+print("cpf valido")
