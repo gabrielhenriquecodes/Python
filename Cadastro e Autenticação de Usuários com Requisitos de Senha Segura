@@ -1,0 +1,110 @@
+#Cadastro e Autenticação de Usuários com Requisitos de Senha Segura
+
+import csv
+import os
+
+# Verifica a força da senha
+def verificar_senha(s):
+    tem_8_caracteres = len(s) >= 8
+    tem_maiuscula = any(c.isupper() for c in s)
+    tem_numero = any(c.isdigit() for c in s)
+    tem_simbolos = any(not c.isalnum() and not c.isspace() for c in s)
+    return tem_8_caracteres, tem_maiuscula, tem_numero, tem_simbolos
+
+# Verifica se o e-mail é de domínio válido
+def verificar_email(email):
+    dominios_validos = {"@gmail.com", "@outlook.com", "@yahoo.com"}
+    return any(dominio in email for dominio in dominios_validos)
+
+# Salva os dados em um arquivo CSV
+def salvar_dados(email, senha):
+    with open("usuarios.csv", "a", newline="") as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow([email, senha])
+
+# Lê os dados salvos do arquivo CSV
+def carregar_dados():
+    usuarios = []
+    if not os.path.exists("usuarios.csv"):
+        return usuarios
+    with open("usuarios.csv", "r") as arquivo:
+        leitor = csv.reader(arquivo)
+        for linha in leitor:
+            if linha:  # Evita linhas vazias
+                usuarios.append((linha[0], linha[1]))
+    return usuarios
+
+# Processo de cadastro
+def criar_conta():
+    while True:
+        nome = input("Qual seu nome?: ")
+        crie_email = input("Crie um e-mail: ")
+        crie_senha = input("Crie uma senha: ")
+
+        tem_8, tem_maiuscula, tem_numero, tem_simbolo = verificar_senha(crie_senha)
+        if not (tem_8 and tem_maiuscula and tem_numero and tem_simbolo):
+            print("Senha inválida. Requisitos:")
+            if not tem_8:
+                print("- Mínimo 8 caracteres.")
+            if not tem_maiuscula:
+                print("- Pelo menos uma letra maiúscula.")
+            if not tem_numero:
+                print("- Pelo menos um número.")
+            if not tem_simbolo:
+                print("- Pelo menos um símbolo.")
+            continue
+
+        if not verificar_email(crie_email):
+            print("E-mail inválido. Use @gmail.com, @outlook.com ou @yahoo.com.")
+            continue
+
+        print("Conta criada com sucesso!")
+        salvar_dados(crie_email, crie_senha)
+        return
+
+# Processo de login
+def fazer_login(usuarios):
+    while True:
+        logar_email = input("Digite seu e-mail: ")
+        logar_senha = input("Digite sua senha: ")
+
+        for email, senha in usuarios:
+            if logar_email == email and logar_senha == senha:
+                print("Login realizado com sucesso!")
+                return
+        print("E-mail ou senha incorretos. Tente novamente.")
+
+# Exibe os usuários cadastrados (menu secreto)
+def ver_usuarios():
+    usuarios = carregar_dados()
+    print("\nUsuários cadastrados:")
+    for i, (email, _) in enumerate(usuarios, 1):
+        print(f"{i}. {email}")
+    print()
+
+# Menu principal
+def main():
+    while True: 
+        print("Menu:\n[1] Criar conta\n[2] Fazer login\n[3] Sair")
+
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            criar_conta()
+        elif opcao == "2":
+            usuarios = carregar_dados()
+            if usuarios:
+                fazer_login(usuarios)
+            else:
+                print("Nenhuma conta cadastrada ainda. Crie uma conta primeiro.")
+        elif opcao == "9":  # menu secreto
+            ver_usuarios()
+        elif opcao == "3":
+            print("Saindo...")
+            break
+        else:
+            print("Opção inválida.")
+
+# Início do programa
+if __name__ == "__main__":
+    main()
