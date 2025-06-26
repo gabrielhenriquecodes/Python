@@ -1,5 +1,3 @@
-#Cadastro e Autenticação de Usuários com Requisitos de Senha Segura
-
 import csv
 import os
 
