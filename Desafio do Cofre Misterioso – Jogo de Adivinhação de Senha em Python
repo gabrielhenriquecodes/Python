@@ -1,0 +1,62 @@
+import random
+import time
+import csv
+
+senha = str(random.randint(0, 9999)).zfill(4)
+
+print("Desafio: Cofre Misterioso")
+print("Tente descobrir a senha de 4 dígitos!")
+print("Dicas: C = certo e na posição | P = está na senha, mas na posição errada | - = não está na senha")
+
+nome = input("Digite seu nome: ")
+descobriu = False
+tentativas_restantes = 4
+inicio = time.time()
+print(senha)
+# Prepara o arquivo CSV para registrar acertos
+with open('dados.csv', 'a', newline='') as arquivo_csv:
+    campos = ['nome', 'tempo']
+    escritor = csv.DictWriter(arquivo_csv, fieldnames=campos)
+
+    # Escreve cabeçalho só se o arquivo estiver vazio
+    try:
+        arquivo_csv.seek(0)
+        if not arquivo_csv.read(1):
+            escritor.writeheader()
+        arquivo_csv.seek(0, 2)  # volta pro final
+    except:
+        pass
+
+    while not descobriu and tentativas_restantes > 0:
+        tentativa = input(f"Tentativas restantes ({tentativas_restantes}). Qual seu chute: ")
+
+        if len(tentativa) != 4 or not tentativa.isdigit():
+            print("Digite exatamente 4 números!")
+            continue
+
+        if tentativa == senha:
+            fim = time.time()
+            tempo_total = fim - inicio
+            print(f" Parabéns, {nome}! Você acertou a senha: {senha}")
+            escritor.writerow({'nome': nome, 'tempo': round(tempo_total, 2)})
+            descobriu = True
+            break
+
+        resultado = []
+        for i in range(4):
+            if tentativa[i] == senha[i]:
+                resultado.append("C")
+            elif tentativa[i] in senha:
+                resultado.append("P")
+            else:
+                resultado.append("-")
+
+        tentativas_restantes -= 1
+        print("Resultado:", " ".join(resultado))
+
+if not descobriu:
+    print(f"Acabaram as tentativas! A senha era: {senha}")
+
+fim = time.time()
+tempo_total = fim - inicio
+print(f"Tempo total: {round(tempo_total, 2)} segundos")
